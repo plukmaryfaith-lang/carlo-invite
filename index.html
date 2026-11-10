@@ -1,0 +1,176 @@
+html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>90s Disco Night Invitation 🪩</title>
+  
+  <!-- GSAP Drag Animation Engine -->
+  <script src="https://cloudflare.com"></script>
+  <script src="https://cloudflare.com"></script>
+
+  <style>
+    /* Global Page Styling */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body, html {
+      width: 100%; height: 100%; 
+      background-color: #0b0214; 
+      font-family: 'Courier New', Courier, monospace;
+      overflow: hidden; /* Page is locked until needle drops */
+      color: #fff;
+    }
+
+    /* --- LAYOUT 1: INTERACTIVE TURNTABLE GATE --- */
+    #gate-screen {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      background: radial-gradient(circle, #240d3d, #090112); 
+      z-index: 999; transition: transform 1.2s cubic-bezier(0.85, 0, 0.15, 1);
+    }
+    .instruction {
+      font-size: 1.1rem; font-weight: bold; margin-bottom: 30px;
+      text-transform: uppercase; letter-spacing: 3px; color: #ff007f;
+      text-shadow: 0 0 10px #ff007f; text-align: center; padding: 0 20px;
+      animation: pulse 1.5s infinite alternate;
+    }
+    @keyframes pulse { 0% { opacity: 0.6; } 100% { opacity: 1; } }
+
+    .turntable {
+      position: relative; width: 340px; height: 340px;
+      background: #181124; border: 6px solid #3d2c54; border-radius: 24px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.8), inset 0 0 20px rgba(0,0,0,0.6);
+    }
+    .vinyl {
+      position: absolute; top: 30px; left: 30px; width: 260px; height: 260px;
+      background: url('record.png') no-repeat center/contain;
+      background-color: #111; border-radius: 50%;
+      box-shadow: 0 0 15px rgba(0,0,0,0.5);
+    }
+    .needle {
+      position: absolute; top: -10px; right: 20px; width: 90px; height: 190px;
+      background: url('needle.png') no-repeat center/contain;
+      transform-origin: 75% 15%; /* Rotates exactly from the metallic joint */
+      cursor: grab; z-index: 10;
+    }
+    .spinning { animation: spin 2.2s linear infinite; }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+
+    /* --- LAYOUT 2: SCROLLING PARTY DETAILS --- */
+    #party-page {
+      width: 100%; min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; background: #0b0214; opacity: 0; transition: opacity 1s ease;
+    }
+    .hero-marquee {
+      width: 100%; max-width: 500px; padding: 40px 20px; text-align: center;
+    }
+    .title-flash {
+      font-size: 3rem; color: #00ffff; text-shadow: 0 0 15px #00ffff;
+      text-transform: uppercase; margin-bottom: 10px; font-weight: 900;
+    }
+    .subtitle { font-size: 1.2rem; color: #ff007f; margin-bottom: 40px; letter-spacing: 2px; }
+    
+    .party-card {
+      width: 90%; max-width: 450px; background: rgba(255, 255, 255, 0.04);
+      border: 2px dashed #3d2c54; border-radius: 12px; padding: 25px;
+      margin-bottom: 25px; text-align: center;
+    }
+    .party-card h3 { color: #ffff00; margin-bottom: 10px; letter-spacing: 1px; }
+    .party-card p { font-size: 1.1rem; line-height: 1.6; color: #e0d5f0; }
+
+    .rsvp-btn {
+      display: inline-block; background: #ff007f; color: #fff; font-weight: bold;
+      padding: 15px 40px; border: none; border-radius: 50px; font-size: 1.2rem;
+      text-decoration: none; text-transform: uppercase; letter-spacing: 2px;
+      box-shadow: 0 0 20px #ff007f; margin: 20px 0 60px 0; transition: transform 0.2s;
+    }
+    .rsvp-btn:hover { transform: scale(1.05); }
+  </style>
+</head>
+<body>
+
+  <!-- BACKGROUND MUSIC -->
+  <audio id="track" src="music.mp3" loop></audio>
+
+  <!-- GATE SCREEN SCREEN WITH INTERACTIVE NEEDLE -->
+  <div id="gate-screen">
+    <div class="instruction">⚡ DRAG NEEDLE ONTO VINYL TO PARTY ⚡</div>
+    <div class="turntable">
+      <div id="vinyl-disc" class="vinyl"></div>
+      <div id="tonearm" class="needle"></div>
+    </div>
+  </div>
+
+  <!-- MAIN SCROLLABLE INVITATION CONTENT -->
+  <div id="party-page">
+    <div class="hero-marquee">
+      <div class="title-flash">DISCO NIGHT</div>
+      <div class="subtitle">90S RETRO VIBES ONLY</div>
+    </div>
+
+    <div class="party-card">
+      <h3>📆 WHEN</h3>
+      <p>Saturday, October 24th</p>
+      <p>8:00 PM till Late</p>
+    </div>
+
+    <div class="party-card">
+      <h3>📍 WHERE</h3>
+      <p>The Electric Lounge</p>
+      <p>404 Groovy Avenue, Suite 90</p>
+    </div>
+
+    <div class="party-card">
+      <h3>🪩 DRESS CODE</h3>
+      <p>Neon accents, vintage denim, silk button-downs, or pure 90s glam.</p>
+    </div>
+
+    <!-- Replace '#' inside href with your Google Forms link or WhatsApp URL -->
+    <a href="#" target="_blank" class="rsvp-btn">RSVP HERE</a>
+  </div>
+
+  <script>
+    gsap.registerPlugin(Draggable);
+
+    const tonearm = document.getElementById('tonearm');
+    const vinylDisc = document.getElementById('vinyl-disc');
+    const track = document.getElementById('track');
+    const gateScreen = document.getElementById('gate-screen');
+    const partyPage = document.getElementById('party-page');
+
+    Draggable.create(tonearm, {
+      type: "rotation",
+      bounds: { minRotation: 0, maxRotation: 40 },
+      onDrag: function() {
+        // Triggers the animation transition when needle is dragged onto the disc grooves
+        if (this.rotation >= 20) {
+          dropTheNeedle();
+        }
+      },
+      onRelease: function() {
+        if (this.rotation < 20) {
+          gsap.to(tonearm, { rotation: 0, duration: 0.4, ease: "power2.out" });
+        }
+      }
+    });
+
+    function dropTheNeedle() {
+      Draggable.get(tonearm).disable();
+      
+      // Lock the needle seamlessly on track groove
+      gsap.to(tonearm, { rotation: 24, duration: 0.2 });
+
+      // Spin the vinyl record canvas and trigger mp3 audio playback
+      vinylDisc.classList.add('spinning');
+      track.play().catch(err => console.log("Audio auto-play block bypass:", err));
+
+      // Slide the record player gate completely off screen up to reveal the cards
+      setTimeout(() => {
+        gateScreen.style.transform = "translateY(-100%)";
+        partyPage.style.opacity = "1";
+        document.body.style.overflow = "auto"; /* Re-enable page scrolling */
+      }, 1000);
+    }
+  </script>
+</body>
+</html>
